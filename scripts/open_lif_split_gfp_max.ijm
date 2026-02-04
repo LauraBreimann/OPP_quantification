@@ -11,6 +11,14 @@ output = getDirectory("Select a directory to save the output files");
 
 files = getFileList(dir);
 
+// create new subfolders to save the split images
+splitDir_DAPI= output + "/DAPI/";
+splitDir_C2= output + "/C2/";
+splitDir_GFP= output + "/GFP/";
+File.makeDirectory(splitDir_DAPI); 
+File.makeDirectory(splitDir_C2); 
+File.makeDirectory(splitDir_GFP); 
+
 
 //setBatchMode(true);
 k=0;
@@ -47,7 +55,7 @@ for(f=0; f<files.length; f++) {
 			selectWindow("C1-" + fullName);
 			resetMinAndMax();
 			run("Grays");
-			saveAs(".tif", output + File.separator + fullName + "_DAPI" + ".tif");
+			saveAs(".tif", splitDir_DAPI + File.separator + fullName + "_DAPI" + ".tif");
 			close();			
 			
 						
@@ -56,7 +64,7 @@ for(f=0; f<files.length; f++) {
 			selectWindow("C2-" + fullName);
 			resetMinAndMax();
 			run("Grays");
-			saveAs(".tif", output + File.separator + fullName + "_C2" + ".tif");
+			saveAs(".tif", splitDir_C2 + File.separator + fullName + "_C2" + ".tif");
 			close();
 			
 			
@@ -68,7 +76,7 @@ for(f=0; f<files.length; f++) {
 			run("Duplicate...", "duplicate");
 			run("Grays");
 			resetMinAndMax();
-			saveAs(".tif", output + File.separator + fullName + "_GFP" + ".tif");
+			saveAs(".tif", splitDir_GFP + File.separator + fullName + "_GFP" + ".tif");
 			close();
 			
 			
@@ -77,12 +85,11 @@ for(f=0; f<files.length; f++) {
 			run("Z Project...", "projection=[Max Intensity]");
 			resetMinAndMax();
 			run("Grays");
-			saveAs(".tif", output + File.separator + fullName + "_GFP_max" + ".tif");
+			saveAs(".tif", splitDir_GFP + File.separator + fullName + "_GFP_max" + ".tif");
 			close();
 						
 									
-			
-						
+									
 				
 			//saved all images info
 			print("Saved to: " + output);
@@ -92,6 +99,13 @@ for(f=0; f<files.length; f++) {
 				
 	
 }
+
+// Remove spaces in filenames which can have issues in downstream analysis
+run("Fix Funny Filenames", "which=" + splitDir_DAPI);
+run("Fix Funny Filenames", "which=" + splitDir_C2);
+run("Fix Funny Filenames", "which=" + splitDir_GFP);
+
+
 
 // close all windows
 print("Done");
